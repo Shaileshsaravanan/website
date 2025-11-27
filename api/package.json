@@ -1,0 +1,17 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "flowbite": "^2.4.1",
+    "tailwindcss": "^3.4.7"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "scripts": {
+    "tailwind": "npx tailwindcss -i static/css/input.css -o static/css/output.css --watch",
+    "flask": "python3 index.py",
+    "start": "concurrently -n TAILWIND,FLASK -c blue,green \"npm:tailwind\" \"npm:flask\""
+  }
+}
