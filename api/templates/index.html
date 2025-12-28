@@ -1,14 +1,404 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/static/css/output.css" rel="stylesheet">
-    <title>shailesh's snapshot</title>
-</head>
-<body>
-    <div class="bg-red-600">
-        background is red
-    </div>
-</body>
+  <style>
+    #greetingsMenu .p-1::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #greetingsMenu .p-1::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+
+    #greetingsMenu .p-1::-webkit-scrollbar-thumb {
+      background: #444;
+      border-radius: 3px;
+    }
+
+    #greetingsMenu .p-1::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+    #greetingsMenu .p-1 {
+      scrollbar-width: thin;
+      scrollbar-color: #444 #1a1a1a;
+    }
+  </style>
+
+  {% include "header.html" %}
+
+  <body class="bg-black text-white">
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <h2 class="flex gap-2 text-4xl italic cursor-pointer font-bold sm:text-4xl lg:text-5xl text-neutral-300">
+        <div id="greetingsFlag">🇬</div>
+        <div id="greetingsPhrase"></div>
+        <div class="flex gap-2 opacity font-handwritten text-2xl">
+          <svg class="w-5" viewBox="0 0 107 122" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M92.5189 27.845C84.0495 51.8276 67.347 67.2264 42.7974 74.3653C40.4736 75.046 37.4246 74.3637 35.706 75.6464C33.4223 77.3492 30.5598 80.4747 30.7282 82.78C31.1164 88.0046 34.7912 90.029 39.0038 88.3109C48.5446 84.4103 58.0682 80.473 67.4289 76.1863C77.8094 71.4466 84.517 62.4543 91.3225 53.8641C95.6184 48.4362 99.3311 42.4297 102.454 36.2392C103.726 33.7101 103.448 29.7773 102.509 26.9472C101.853 25.0143 98.9213 22.8786 96.8343 22.699C95.1774 22.5539 93.2758 25.2201 91.4898 26.6461L92.5189 27.845Z" fill="#D4D4D4" />
+            <path d="M5.37948 81.1253C3.78479 86.1777 4.56555 90.156 7.93631 92.5125C15.391 97.6987 23.1951 102.386 30.9856 107.069C34.0931 108.933 37.2542 107.168 37.5639 104.304C37.8711 101.53 36.6749 97.645 34.706 95.7987C31.6136 92.8872 27.3063 91.2583 23.4992 89.0941C19.8661 87.0391 19.5641 84.6394 22.3323 81.4796C27.5168 75.5814 32.5286 69.5286 37.6249 63.5373C40.4238 60.2512 38.1819 57.4354 36.3957 55.0451C34.3768 52.3716 31.3889 52.4443 29.0989 54.8775C26.8506 57.2801 25.221 60.2896 22.9641 62.6738C18.4416 67.4239 13.6142 71.8797 9.02068 76.5734C7.46623 78.16 6.23891 80.0642 5.39298 81.1302L5.37948 81.1253Z" fill="#D4D4D4" />
+          </svg>
+          click me
+        </div>
+      </h2>
+
+      <div id="greetingsMenu" class="absolute mx-10 transition-[opacity,margin] w-56 duration shadow-md rounded-lg mt-2 bg-neutral-800 border border-neutral-700 opacity-0 pointer-events-none" role="menu">
+        <div class="p-1 space-y-0.5 max-h-80 overflow-y-auto"></div>
+      </div>
+
+      <h1 class="text-6xl font-bold sm:text-6xl lg:text-7xl">I'm Shailesh.</h1>
+      <div id="richPresence" class="font-bold text-xl"></div>
+    </section>
+  </body>
+
 </html>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const greetingsFlag = document.getElementById("greetingsFlag");
+    const greetingsPhrase = document.getElementById("greetingsPhrase");
+    const dropdownWrapper = document.getElementById("greetingsMenu");
+    const dropdown = dropdownWrapper.querySelector(".p-1");
+    const trigger = document.querySelector("h2");
+    let greetingsData = {};
+    let countryIndex = [];
+    let currentPool = [];
+    let fullPool = [];
+    let intervalId = null;
+    let lastShown = [];
+    fetch("/static/greetings.json").then(r => r.json()).then(d => {
+      greetingsData = d;
+      buildCountryIndex();
+      buildDropdown();
+      setRandomGreetingCycle();
+    });
+
+    function buildCountryIndex() {
+      const countryMap = {};
+      Object.keys(greetingsData).forEach(lang => {
+        const langBlock = greetingsData[lang];
+        if (!langBlock || !Array.isArray(langBlock.countries) || !Array.isArray(langBlock.greetings)) return;
+        langBlock.countries.forEach(c => {
+          const key = c.name + "|" + c.flag;
+          if (!countryMap[key]) countryMap[key] = {
+            name: c.name,
+            flag: c.flag,
+            greetings: []
+          };
+          langBlock.greetings.forEach(g => countryMap[key].greetings.push(g));
+        });
+      });
+      countryIndex = Object.values(countryMap).sort((a, b) => a.name.localeCompare(b.name));
+      const pool = [];
+      countryIndex.forEach(c => {
+        c.greetings.forEach(g => pool.push({
+          flag: c.flag,
+          text: stripPronunciation(g)
+        }));
+      });
+      fullPool = pool;
+    }
+
+    function buildDropdown() {
+      dropdown.innerHTML = "";
+      countryIndex.forEach(c => {
+        const item = document.createElement("a");
+        item.className = "flex gap-2 items-center py-2 px-3 rounded-lg text-sm text-neutral-400 hover:bg-neutral-700 hover:text-neutral-300 focus:bg-neutral-700";
+        item.href = "#";
+        item.innerHTML = `<div>${c.flag}</div><div>${c.name}</div>`;
+        item.onclick = e => {
+          e.preventDefault();
+          currentPool = c.greetings.map(g => ({
+            flag: c.flag,
+            text: stripPronunciation(g)
+          }));
+          lastShown = [];
+          cycleFromPool();
+          hideMenu();
+        };
+        dropdown.appendChild(item);
+      });
+    }
+
+    function setRandomGreetingCycle() {
+      if (!fullPool.length) return;
+      currentPool = fullPool.slice();
+      lastShown = [];
+      cycleFromPool();
+    }
+
+    function resetAnimation(el) {
+      el.classList.remove("animate-fade-up");
+      void el.offsetWidth;
+      el.classList.add("animate-fade-up");
+    }
+
+    function cycleFromPool() {
+      if (!currentPool.length) return;
+      if (intervalId) clearInterval(intervalId);
+      updateGreeting();
+      intervalId = setInterval(updateGreeting, 2000);
+    }
+
+    function updateGreeting() {
+      const seen = new Set(lastShown.map(i => i.flag + "|" + i.text));
+      const available = currentPool.filter(i => !seen.has(i.flag + "|" + i.text));
+      const pool = available.length ? available : currentPool;
+      const choice = pool[Math.floor(Math.random() * pool.length)];
+      greetingsFlag.textContent = choice.flag;
+      greetingsPhrase.textContent = choice.text + ",";
+      resetAnimation(greetingsFlag);
+      resetAnimation(greetingsPhrase);
+      lastShown.push(choice);
+      if (lastShown.length > 3) lastShown.shift();
+    }
+
+    function stripPronunciation(g) {
+      const idx = g.indexOf("(");
+      if (idx === -1) return g.trim();
+      return g.slice(0, idx).trim();
+    }
+
+    function toggleMenu() {
+      dropdownWrapper.classList.toggle("opacity-0");
+      dropdownWrapper.classList.toggle("pointer-events-none");
+    }
+
+    function hideMenu() {
+      dropdownWrapper.classList.add("opacity-0");
+      dropdownWrapper.classList.add("pointer-events-none");
+    }
+    trigger.addEventListener("click", () => toggleMenu());
+    document.addEventListener("click", e => {
+      if (!dropdownWrapper.contains(e.target) && !trigger.contains(e.target)) hideMenu();
+    });
+  });
+  let ws;
+
+  function connect() {
+    ws = new WebSocket("wss://api.lanyard.rest/socket");
+    ws.onopen = () => ws.send(JSON.stringify({
+      op: 2,
+      d: {
+        subscribe_to_id: "742317800688713758"
+      }
+    }));
+    ws.onmessage = m => {
+      const d = JSON.parse(m.data);
+      if (d.t === "INIT_STATE") richPresenceUpdate(d.d);
+      if (d.t === "PRESENCE_UPDATE") richPresenceUpdate(d.d);
+    };
+    ws.onclose = () => setTimeout(connect, 2000);
+  }
+  connect();
+  const tailwindColorClass = {
+    red: "bg-red-600",
+    orange: "bg-orange-600",
+    amber: "bg-amber-600",
+    yellow: "bg-yellow-500",
+    lime: "bg-lime-600",
+    green: "bg-green-600",
+    emerald: "bg-emerald-600",
+    teal: "bg-teal-600",
+    cyan: "bg-cyan-600",
+    sky: "bg-sky-600",
+    blue: "bg-blue-600",
+    indigo: "bg-indigo-600",
+    violet: "bg-violet-600",
+    purple: "bg-purple-600",
+    fuchsia: "bg-fuchsia-600",
+    pink: "bg-pink-600",
+    rose: "bg-rose-600"
+  };
+  async function getAlbumRGB(url) {
+    return new Promise(res => {
+      const i = new Image();
+      i.crossOrigin = "anonymous";
+      i.src = url;
+      i.onload = () => res(new ColorThief().getColor(i));
+    });
+  }
+
+  function rgbToHsl(r, g, b) {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    const max = Math.max(r, g, b),
+      min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+    if (max === min) {
+      h = s = 0
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h = (b - r) / d + 2;
+          break;
+        case b:
+          h = (r - g) / d + 4;
+          break;
+      }
+      h *= 60;
+    }
+    return {
+      h,
+      s,
+      l
+    };
+  }
+  const tailwindHueMap = [{
+    name: "red",
+    h: 0
+  }, {
+    name: "orange",
+    h: 24
+  }, {
+    name: "amber",
+    h: 38
+  }, {
+    name: "yellow",
+    h: 50
+  }, {
+    name: "lime",
+    h: 75
+  }, {
+    name: "green",
+    h: 120
+  }, {
+    name: "emerald",
+    h: 140
+  }, {
+    name: "teal",
+    h: 165
+  }, {
+    name: "cyan",
+    h: 190
+  }, {
+    name: "sky",
+    h: 200
+  }, {
+    name: "blue",
+    h: 220
+  }, {
+    name: "indigo",
+    h: 245
+  }, {
+    name: "violet",
+    h: 265
+  }, {
+    name: "purple",
+    h: 280
+  }, {
+    name: "fuchsia",
+    h: 300
+  }, {
+    name: "pink",
+    h: 330
+  }, {
+    name: "rose",
+    h: 350
+  }];
+
+  function closestTailwindColorName(r, g, b) {
+    const {
+      h
+    } = rgbToHsl(r, g, b);
+    let best = tailwindHueMap[0];
+    let diff = 999;
+    tailwindHueMap.forEach(c => {
+      let d = Math.abs(h - c.h);
+      if (d > 180) d = 360 - d;
+      if (d < diff) {
+        diff = d;
+        best = c;
+      }
+    });
+    return best.name;
+  }
+
+  function format(ms) {
+    const s = Math.floor(ms / 1000);
+    return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,"0")}`;
+  }
+  let spotifyInterval;
+
+  function handleSpotifyProgress(spotify, root) {
+    clearInterval(spotifyInterval);
+    if (!spotify || !spotify.timestamps) return;
+    const start = spotify.timestamps.start;
+    const end = spotify.timestamps.end;
+    const total = end - start;
+    const bar = root.querySelector(".spBar");
+    const elapsedEl = root.querySelector(".spElapsed");
+    const totalEl = root.querySelector(".spTotal");
+    if (!bar) return;
+    totalEl.textContent = format(total);
+
+    function tick() {
+      const now = Date.now();
+      const elapsed = Math.max(0, now - start);
+      bar.style.width = Math.min(100, (elapsed / total) * 100) + "%";
+      elapsedEl.textContent = format(elapsed);
+    }
+    tick();
+    spotifyInterval = setInterval(tick, 1000);
+  }
+  async function richPresenceUpdate(data) {
+    const presence = document.getElementById("richPresence");
+    let statusHTML =
+      data.discord_status === "offline" ?
+      `I'm currently <span class="rounded-md bg-gray-500 px-1 underline">offline</span>` :
+      data.discord_status === "idle" ?
+      `I'm currently <span class="rounded-md bg-yellow-500 px-1 underline">idle</span>` :
+      `I'm currently <span class="rounded-md bg-green-600 px-1 underline">online</span>`;
+    const activities = [];
+    if (data.listening_to_spotify && data.spotify) {
+      const [r, g, b] = await getAlbumRGB(data.spotify.album_art_url);
+      const name = closestTailwindColorName(r, g, b);
+      const className = tailwindColorClass[name] || "bg-neutral-700";
+        activities.push(`
+            listening to
+            <span onclick="window.open('https://open.spotify.com/track/${data.spotify.track_id}', '_blank')" class="group relative inline-flex items-center gap-1 px-1 rounded-md ${className} cursor-pointer">
+                <img src="${data.spotify.album_art_url}" class="w-4 h-4 rounded-sm">
+                <span class="font-semibold">${data.spotify.song}</span>
+                <span class="absolute left-1/2 top-full z-10 hidden -translate-x-1/2 mt-1.5 group-hover:block">
+                    <div class="bg-neutral-900 border border-white/10 rounded-lg px-4 py-3 flex flex-col gap-2 shadow-2xl w-max">
+                        <div class="flex items-center gap-4">
+                        <img src="${data.spotify.album_art_url}" class="h-12 w-12 rounded-md object-cover bg-gray-300">
+                        <div>
+                            <p class="text-sm font-semibold text-white">${data.spotify.song}</p>
+                            <p class="text-xs text-gray-400">${data.spotify.artist}</p>
+                        </div>
+                        </div>
+
+                        <div class="w-full h-1 bg-gray-700 rounded overflow-hidden">
+                        <div class="spBar h-full bg-green-500" style="width:0%"></div>
+                        </div>
+
+                        <div class="flex justify-between text-xs text-gray-400">
+                        <span class="spElapsed">0:00</span>
+                        <span class="spTotal"></span>
+                        </div>
+                    </div>
+                </span>
+            </span>`);
+    }
+    if (Array.isArray(data.activities)) {
+      data.activities.forEach(a => {
+        if (a.name !== "Spotify") {
+          const t = a.details || a.state || a.name;
+          if (t) activities.push(t);
+        }
+      });
+    }
+    const activityText =
+      activities.length === 1 ? ` ${activities[0]}.` :
+      activities.length > 1 ? ` ${activities.join(", ")}.` :
+      ".";
+    presence.innerHTML = statusHTML + activityText;
+    const spotifyRoot = presence.querySelector(".group");
+    if (spotifyRoot && data.spotify) handleSpotifyProgress(data.spotify, spotifyRoot);
+  }
+</script>
