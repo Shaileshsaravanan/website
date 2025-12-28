@@ -349,10 +349,10 @@
     const presence = document.getElementById("richPresence");
     let statusHTML =
       data.discord_status === "offline" ?
-      `currently <span class="rounded-md bg-gray-500 px-1 underline">offline</span>` :
+      `currently <span class="rounded-md bg-gray-500 text-white hover:bg-white hover:text-gray-500 cursor-pointer px-1 underline">offline</span>` :
       data.discord_status === "idle" ?
-      `currently <span class="rounded-md bg-yellow-500 px-1 underline">idle</span>` :
-      `currently <span class="rounded-md bg-green-600 px-1 underline">online</span>`;
+      `currently <span class="rounded-md bg-yellow-500 text-white hover:bg-white hover:text-yellow-500 cursor-pointer px-1 underline">idle</span>` :
+      `currently <span class="rounded-md bg-green-600 text-white hover:bg-white hover:text-green-600 cursor-pointer px-1 underline">online</span>`;
     const activities = [];
     if (data.listening_to_spotify && data.spotify) {
       const [r, g, b] = await getAlbumRGB(data.spotify.album_art_url);
