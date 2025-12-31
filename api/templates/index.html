@@ -1,6 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
   <style>
+
+    @keyframes smooth-fade-out {
+      from { opacity: 1; transform: translateX(0); }
+      to { opacity: 0; transform: translateX(10px); }
+    }
+
+    .animate-fade-out {
+      animation: smooth-fade-out 0.5s forwards;
+    }
+
+    #richPresence {
+      white-space: normal;
+    }
+
+    #richPresence .group {
+      display: inline;
+      white-space: normal;
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
+    }
+
+    #richPresence img {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
     #greetingsMenu .p-1::-webkit-scrollbar {
       width: 6px;
     }
@@ -23,16 +49,18 @@
       scrollbar-color: #444 #1a1a1a;
     }
   </style>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+
 
   {% include "header.html" %}
 
   <body class="bg-black text-white">
     <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-      <h2 class="flex gap-2 text-4xl italic cursor-pointer font-bold sm:text-4xl lg:text-5xl text-neutral-300">
-        <div id="greetingsFlag">🇬</div>
+      <h2 class="flex gap-2 md:text-4xl text-2xl italic cursor-pointer font-bold sm:text-3xl lg:text-4xl text-neutral-300 animate-fade-down animate-duration-[1200ms]">
+        <div id="greetingsFlag"></div>
         <div id="greetingsPhrase"></div>
-        <div class="flex gap-2 opacity font-handwritten text-2xl">
-          <svg class="w-5" viewBox="0 0 107 122" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div class="flex gap-2 opacity font-handwritten text-md md:text-2xl">
+          <svg class="w-3 md:w-5" viewBox="0 0 107 122" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M92.5189 27.845C84.0495 51.8276 67.347 67.2264 42.7974 74.3653C40.4736 75.046 37.4246 74.3637 35.706 75.6464C33.4223 77.3492 30.5598 80.4747 30.7282 82.78C31.1164 88.0046 34.7912 90.029 39.0038 88.3109C48.5446 84.4103 58.0682 80.473 67.4289 76.1863C77.8094 71.4466 84.517 62.4543 91.3225 53.8641C95.6184 48.4362 99.3311 42.4297 102.454 36.2392C103.726 33.7101 103.448 29.7773 102.509 26.9472C101.853 25.0143 98.9213 22.8786 96.8343 22.699C95.1774 22.5539 93.2758 25.2201 91.4898 26.6461L92.5189 27.845Z" fill="#D4D4D4" />
             <path d="M5.37948 81.1253C3.78479 86.1777 4.56555 90.156 7.93631 92.5125C15.391 97.6987 23.1951 102.386 30.9856 107.069C34.0931 108.933 37.2542 107.168 37.5639 104.304C37.8711 101.53 36.6749 97.645 34.706 95.7987C31.6136 92.8872 27.3063 91.2583 23.4992 89.0941C19.8661 87.0391 19.5641 84.6394 22.3323 81.4796C27.5168 75.5814 32.5286 69.5286 37.6249 63.5373C40.4238 60.2512 38.1819 57.4354 36.3957 55.0451C34.3768 52.3716 31.3889 52.4443 29.0989 54.8775C26.8506 57.2801 25.221 60.2896 22.9641 62.6738C18.4416 67.4239 13.6142 71.8797 9.02068 76.5734C7.46623 78.16 6.23891 80.0642 5.39298 81.1302L5.37948 81.1253Z" fill="#D4D4D4" />
           </svg>
@@ -40,12 +68,46 @@
         </div>
       </h2>
 
-      <div id="greetingsMenu" class="absolute mx-10 transition-[opacity,margin] w-56 duration shadow-md rounded-lg mt-2 bg-neutral-800 border border-neutral-700 opacity-0 pointer-events-none z-10" role="menu">
+      <div id="greetingsMenu" class="z-[100] absolute mx-10 transition-[opacity,margin] w-56 duration shadow-md rounded-lg mt-2 bg-neutral-800 border border-neutral-700 opacity-0 pointer-events-none z-10" role="menu">
         <div class="p-1 space-y-0.5 max-h-80 overflow-y-auto"></div>
       </div>
 
-      <h1 class="text-6xl font-bold sm:text-6xl lg:text-7xl">I'm Shailesh.</h1>
-      <div id="richPresence" class="font-bold text-xl"></div>
+      <h1 class="text-5xl font-bold lg:text-7xl mt-2 animate-fade-down animate-delay-[800ms]">I'm Shailesh.</h1>
+      <div id="richPresence" class="relative z-50 font-merriweather font-medium leading-relaxed text-sm md:text-md font-gflex animate-delay-[1000ms] mt-1 transition-colors duration-700 ease-in-out"></div>
+    </section>
+    <section class="relative z-0 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div>
+          <button class="w-full cursor-default">
+             <div class="flex w-full items-center justify-between text-5xl font-extralight italic mb-3 animate-fade-down animate-delay-[3000ms]">
+                <h2 class="relative">
+                  <span id="mechanicaHeading" onclick="toggleAccord(this.closest('button'))" class="heading relative cursor-pointer inline-block text-white hover:bg-white hover:text-black rounded-lg px-1 transition-colors duration-700 ease-in-out">
+                    mechanica
+                  </span>
+                </h2>
+                <span class="viewMore hidden cursor-pointer animate-fade-up animate-delay-[7000ms] text-white hover:text-black hover:bg-white px-1 rounded-md hover:underline text-sm font-geist inline-flex">view more <svg xmlns="http://www.w3.org/2000/svg" class="h-[1em] ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right-icon lucide-arrow-up-right"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg> </span>
+              </div>
+          </button>
+          <div class="content max-h-0 overflow-hidden transition-all duration-700 ease-in-out">
+            <div id="mechanicaProjects" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+          </div>
+        </div>
+        <div>
+          <button class="w-full cursor-default">
+             <div class="flex w-full items-center justify-between text-5xl font-extralight italic mb-3 animate-fade-down animate-delay-[3500ms]">
+                <h2 class="relative">
+                  <span id="scriptoriumHeading" onclick="toggleAccord(this.closest('button'))" class="heading relative cursor-pointer inline-block text-white hover:bg-white hover:text-black rounded-lg px-1 transition-colors duration-700 ease-in-out">
+                    scriptorium
+                  </span>
+                </h2>
+                <span class="viewMore hidden cursor-pointer animate-fade-up animate-delay-[7500ms] text-white hover:text-black hover:bg-white px-1 rounded-md hover:underline text-sm font-geist inline-flex">view more 
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-[1em] ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+                </span>
+              </div>
+          </button>
+          <div class="content max-h-0 overflow-hidden transition-all duration-700 ease-in-out">
+            <div id="scriptoriumProjects" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+          </div>
+        </div>
     </section>
   </body>
 
@@ -134,19 +196,29 @@
     function cycleFromPool() {
       if (!currentPool.length) return;
       if (intervalId) clearInterval(intervalId);
-      updateGreeting();
-      intervalId = setInterval(updateGreeting, 2000);
+
+      updateGreeting(true);
+
+      setTimeout(() => {
+        updateGreeting();
+        intervalId = setInterval(updateGreeting, 2000);
+      }, 3000);
     }
 
-    function updateGreeting() {
+    function updateGreeting(isFirst = false) {
       const seen = new Set(lastShown.map(i => i.flag + "|" + i.text));
       const available = currentPool.filter(i => !seen.has(i.flag + "|" + i.text));
       const pool = available.length ? available : currentPool;
       const choice = pool[Math.floor(Math.random() * pool.length)];
+
       greetingsFlag.textContent = choice.flag;
       greetingsPhrase.textContent = choice.text + ",";
-      resetAnimation(greetingsFlag);
-      resetAnimation(greetingsPhrase);
+
+      if (!isFirst) {
+        resetAnimation(greetingsFlag);
+        resetAnimation(greetingsPhrase);
+      }
+
       lastShown.push(choice);
       if (lastShown.length > 3) lastShown.shift();
     }
@@ -183,7 +255,7 @@
     }));
     ws.onmessage = m => {
       const d = JSON.parse(m.data);
-      if (d.t === "INIT_STATE") richPresenceUpdate(d.d);
+      if (d.t === "INIT_STATE") richPresenceUpdate(d.d) && document.getElementById("richPresence").classList.add("animate-fade-down");
       if (d.t === "PRESENCE_UPDATE") richPresenceUpdate(d.d);
     };
     ws.onclose = () => setTimeout(connect, 2000);
@@ -349,10 +421,10 @@
     const presence = document.getElementById("richPresence");
     let statusHTML =
       data.discord_status === "offline" ?
-      `currently <span class="rounded-md bg-gray-500 text-white hover:bg-white hover:text-gray-500 cursor-pointer px-1 underline">offline</span>` :
+      `currently <span class="rounded-md bg-gray-500 text-white hover:bg-white hover:text-gray-500 cursor-pointer px-1 underline transition-colors duration-700 ease-in-out">offline</span>` :
       data.discord_status === "idle" ?
-      `currently <span class="rounded-md bg-yellow-500 text-white hover:bg-white hover:text-yellow-500 cursor-pointer px-1 underline">idle</span>` :
-      `currently <span class="rounded-md bg-green-600 text-white hover:bg-white hover:text-green-600 cursor-pointer px-1 underline">online</span>`;
+      `currently <span class="rounded-md bg-yellow-500 text-white hover:bg-white hover:text-yellow-500 cursor-pointer px-1 underline transition-colors duration-700 ease-in-out">idle</span>` :
+      `currently <span class="rounded-md bg-green-600 text-white hover:bg-white hover:text-green-600 cursor-pointer px-1 underline transition-colors duration-700 ease-in-out">online</span>`;
     const activities = [];
     if (data.listening_to_spotify && data.spotify) {
       const [r, g, b] = await getAlbumRGB(data.spotify.album_art_url);
@@ -360,10 +432,10 @@
       const className = tailwindColorClass[name] || "bg-neutral-700";
         activities.push(`
             listening to
-            <span onclick="window.open('https://open.spotify.com/track/${data.spotify.track_id}', '_blank')" class="group relative inline-flex items-center gap-1 px-1 rounded-md ${className} cursor-pointer">
-                <img src="${data.spotify.album_art_url}" class="w-4 h-4 rounded-sm">
-                <span class="font-semibold">${data.spotify.song}</span>
-                <span class="absolute left-1/2 top-full z-10 hidden -translate-x-1/2 mt-1.5 group-hover:block">
+            <span onclick="window.open('https://open.spotify.com/track/${data.spotify.track_id}', '_blank')" class="group relative px-1 py-0.5 rounded-md ${className} cursor-pointer transition-colors duration-700 ease-in-out">
+                <img src="${data.spotify.album_art_url}" class="w-4 h-4 rounded-sm align-middle">
+                <span>${data.spotify.song}</span>
+                <span class="absolute left-1/2 top-full z-[9999] opacity-0 pointer-events-none -translate-x-1/2 mt-1.5 transition-opacity duration-700 ease-in-out group-hover:opacity-100 group-hover:pointer-events-auto">
                     <div class="bg-neutral-900 border border-white/10 rounded-lg px-4 py-3 flex flex-col gap-2 shadow-2xl w-max">
                         <div class="flex items-center gap-4">
                         <img src="${data.spotify.album_art_url}" class="h-12 w-12 rounded-md object-cover bg-gray-300">
@@ -401,4 +473,157 @@
     const spotifyRoot = presence.querySelector(".group");
     if (spotifyRoot && data.spotify) handleSpotifyProgress(data.spotify, spotifyRoot);
   }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const flag = document.getElementById("greetingsFlag");
+    const phrase = document.getElementById("greetingsPhrase");
+
+    flag.classList.add("animate-fade-down");
+    phrase.classList.add("animate-fade-down", "animate-delay-[100ms]");
+
+    setTimeout(() => {
+      flag.classList.remove("animate-fade-down");
+      phrase.classList.remove("animate-fade-down", "animate-delay-[100ms]");
+    }, 600);
+  });
+
+function toggleAccord(btn){
+    const content = btn.nextElementSibling;
+    const heading = btn.querySelector(".heading");
+    const viewMore = btn.querySelector(".viewMore");
+
+    if (content.style.maxHeight) {
+      for (let i = 3; i >= 1; i--) {
+        console.log(`Hiding item ${i}`);
+        const title = content.querySelector(`.modelViewerTitle-${i}`);
+        if (!title) continue;
+        title.classList.remove("animate-fade-up");
+        void title.offsetWidth;
+        title.style.animationDuration = "1.5s";
+        title.style.animationDelay = `${(3 - i) * 400 + 500}ms`;
+        title.classList.add("animate-fade-out");
+
+        const modelViewerParent = content.querySelector(`.modelViewerParent-${i}`);
+        if (!modelViewerParent) continue;
+        modelViewerParent.classList.remove("animate-fade-up");
+        void modelViewerParent.offsetWidth;
+        modelViewerParent.style.animationDuration = "1.5s";
+        modelViewerParent.style.animationDelay = `${(3 - i) * 400}ms`;
+        modelViewerParent.classList.add("animate-fade-out");
+      }
+
+      if (viewMore) {
+        viewMore.classList.remove("animate-fade-up");
+        void viewMore.offsetWidth;
+        viewMore.style.animationDuration = "1.5s";
+        viewMore.style.animationDelay = "1800ms";
+        viewMore.classList.add("animate-fade-out");
+      }
+
+      setTimeout(() => {
+        content.style.maxHeight = null;
+        content.classList.remove("mb-6");
+        heading.classList.remove("text-black", "bg-white");
+        heading.classList.add("text-white", "hover:bg-white", "hover:text-black");
+      }, 3500);
+
+      setTimeout(() => {
+        for (let i = 3; i >= 1; i--) {
+          const title = content.querySelector(`.modelViewerTitle-${i}`);
+          if (title) {
+            title.classList.remove("animate-fade-out");
+            title.style.animationDuration = "";
+            title.style.animationDelay = "";
+            void title.offsetWidth;
+            title.classList.add("animate-fade-up");
+          }
+
+          const modelViewerParent = content.querySelector(`.modelViewerParent-${i}`);
+          if (modelViewerParent) {
+            modelViewerParent.classList.remove("animate-fade-out");
+            modelViewerParent.style.animationDuration = "";
+            modelViewerParent.style.animationDelay = "";
+            void modelViewerParent.offsetWidth;
+            modelViewerParent.classList.add("animate-fade-up");
+          }
+        }
+
+        if (viewMore) {
+          viewMore.classList.add("hidden");
+          viewMore.classList.remove("animate-fade-out");
+          void viewMore.offsetWidth;
+          viewMore.style.animationDuration = "";
+          viewMore.style.animationDelay = "";
+          viewMore.classList.add("animate-fade-up");
+        }
+      }, 4250);
+
+    } else {
+      viewMore.classList.remove("hidden");
+      heading.classList.remove("text-white", "hover:bg-white", "hover:text-black");
+      heading.classList.add("text-black", "bg-white");
+      content.style.maxHeight = content.scrollHeight + "px";
+      content.classList.add("mb-6");
+      const fadeItems = content.querySelectorAll(".animate-fade-up");
+      fadeItems.forEach(el => {
+        el.classList.remove("animate-fade-up");
+        void el.offsetWidth;
+        el.classList.add("animate-fade-up");
+      });
+    }
+  }
+
+  const githubData = {{ githubData | tojson }};
+
+function renderMechanicaProjects(){
+    const container = document.getElementById("mechanicaProjects");
+    count = 1;
+    currentDelay = 1000;
+    currentDelayText = 2000;
+    githubData.mechanica.slice(0, 3).forEach((repo, index) => {
+      const projectDiv = document.createElement("div");
+      projectDiv.className = "mechanicaProject";
+      projectDiv.innerHTML = `
+        <div class="modelViewerParent-${count} h-48 bg-neutral-900 border border-white/10 rounded-lg animate-fade-up" style="animation-delay:${currentDelay}ms">
+          <model-viewer class="h-full w-full" src="https://raw.githubusercontent.com/Shaileshsaravanan/${repo}/main/.website/preview.glb" shadow-intensity="1" camera-controls touch-action="pan-x"></model-viewer>
+        </div>
+        <div class="modelViewerTitle-${count} mt-3 font-medium font-geist animate-fade-up" style="animation-delay:${currentDelayText}ms">${repo}</div>
+      `;
+      container.appendChild(projectDiv);
+      currentDelay += 2000;
+      currentDelayText += 2000;
+      count += 1;
+    });
+  }
+
+function renderScriptoriumProjects(){
+  const container = document.getElementById("scriptoriumProjects");
+  let count = 1;
+  let currentDelay = 1000;
+  let currentDelayText = 2000;
+
+  if (!githubData || !githubData.scriptorium || !Array.isArray(githubData.scriptorium)) return;
+
+  githubData.scriptorium.slice(0, 3).forEach((repo) => {
+    const projectDiv = document.createElement("div");
+    projectDiv.className = "scriptoriumProject";
+    projectDiv.innerHTML = `
+      <div class="modelViewerParent-${count} h-48 p-2 bg-neutral-900 border border-white/10 rounded-lg animate-fade-up" style="animation-delay:${currentDelay}ms">
+        <img class="h-full w-full"
+             src="https://raw.githubusercontent.com/Shaileshsaravanan/${repo}/main/.website/preview.png"
+             onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/Shaileshsaravanan/${repo}/main/.website/preview.gif';"
+             alt="${repo}">
+      </div>
+      <div class="modelViewerTitle-${count} mt-3 font-medium font-geist animate-fade-up" style="animation-delay:${currentDelayText}ms">${repo}</div>
+    `;
+    container.appendChild(projectDiv);
+    currentDelay += 2000;
+    currentDelayText += 2000;
+    count += 1;
+  });
+}
+
+  renderMechanicaProjects();
+  renderScriptoriumProjects();
+
 </script>
