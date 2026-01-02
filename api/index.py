@@ -37,11 +37,11 @@ while True:
                 info = raw.json()
                 repo_type = info.get("type")
 
-                readme_url = f"https://raw.githubusercontent.com/{GITHUB_USERNAME}/{repo_name}/main/readme.md"
+                content_url = f"https://raw.githubusercontent.com/{GITHUB_USERNAME}/{repo_name}/main/.website/content.md"
 
                 entry = {
                     repo_name: {
-                        "readme": readme_url,
+                        "content": content_url,
                         "data": info
                     }
                 }
