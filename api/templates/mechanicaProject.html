@@ -87,6 +87,15 @@
             });
         });
 
+        content.querySelectorAll("a").forEach(el => {
+            el.target = "_blank";
+            el.rel = "noopener noreferrer";
+        });
+
+        content.querySelectorAll("img").forEach(el => {
+            el.classList.add("rounded-lg");
+        });
+
         const all = content.querySelectorAll("*");
         all.forEach(el => {
             el.classList.add("opacity-0");
