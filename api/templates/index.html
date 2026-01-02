@@ -84,7 +84,7 @@
                     mechanica
                   </span>
                 </h2>
-                <span class="viewMore hidden cursor-pointer animate-fade-up animate-delay-[7000ms] text-white hover:text-black hover:bg-white px-1 rounded-md hover:underline text-sm font-geist inline-flex">view more <svg xmlns="http://www.w3.org/2000/svg" class="h-[1em] ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right-icon lucide-arrow-up-right"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg> </span>
+                <span onclick="event.stopPropagation(); window.location.href='/mechanica'" class="viewMore hidden cursor-pointer animate-fade-up animate-delay-[7000ms] text-white hover:text-black hover:bg-white px-1 rounded-md hover:underline text-sm font-geist inline-flex transition-colors duration-700 ease-in-out">view more <svg xmlns="http://www.w3.org/2000/svg" class="h-[1em] ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right-icon lucide-arrow-up-right"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg> </span>
               </div>
           </button>
           <div class="content max-h-0 overflow-hidden transition-all duration-700 ease-in-out">
@@ -99,7 +99,7 @@
                     scriptorium
                   </span>
                 </h2>
-                <span class="viewMore hidden cursor-pointer animate-fade-up animate-delay-[7500ms] text-white hover:text-black hover:bg-white px-1 rounded-md hover:underline text-sm font-geist inline-flex">view more 
+                <span class="viewMore hidden cursor-pointer animate-fade-up animate-delay-[7500ms] text-white hover:text-black hover:bg-white px-1 rounded-md hover:underline text-sm font-geist inline-flex transition-colors duration-700 ease-in-out">view more 
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-[1em] ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
                 </span>
               </div>
@@ -535,7 +535,7 @@ function toggleAccord(btn){
             title.style.animationDuration = "";
             title.style.animationDelay = "";
             void title.offsetWidth;
-            title.classList.add("animate-fade-up");
+            // Do NOT re-add animate-fade-up here
           }
 
           const modelViewerParent = content.querySelector(`.modelViewerParent-${i}`);
@@ -544,7 +544,7 @@ function toggleAccord(btn){
             modelViewerParent.style.animationDuration = "";
             modelViewerParent.style.animationDelay = "";
             void modelViewerParent.offsetWidth;
-            modelViewerParent.classList.add("animate-fade-up");
+            // Do NOT re-add animate-fade-up here
           }
         }
 
@@ -554,7 +554,7 @@ function toggleAccord(btn){
           void viewMore.offsetWidth;
           viewMore.style.animationDuration = "";
           viewMore.style.animationDelay = "";
-          viewMore.classList.add("animate-fade-up");
+          // Do NOT re-add animate-fade-up here
         }
       }, 4250);
 
@@ -564,12 +564,49 @@ function toggleAccord(btn){
       heading.classList.add("text-black", "bg-white");
       content.style.maxHeight = content.scrollHeight + "px";
       content.classList.add("mb-6");
-      const fadeItems = content.querySelectorAll(".animate-fade-up");
-      fadeItems.forEach(el => {
-        el.classList.remove("animate-fade-up");
-        void el.offsetWidth;
-        el.classList.add("animate-fade-up");
-      });
+
+      // Re-trigger animations with proper delays every time accordion opens
+      let currentDelay = 1000;
+      let currentDelayText = 2000;
+
+      for (let i = 1; i <= 3; i++) {
+        const title = content.querySelector(`.modelViewerTitle-${i}`);
+        const modelViewerParent = content.querySelector(`.modelViewerParent-${i}`);
+
+        if (modelViewerParent) {
+          modelViewerParent.classList.remove("animate-fade-up");
+          modelViewerParent.style.animationDelay = "";
+          modelViewerParent.style.animationDuration = "";
+          void modelViewerParent.offsetWidth;
+          modelViewerParent.style.animationDelay = `${currentDelay}ms`;
+          modelViewerParent.style.animationDuration = "1.5s";
+          modelViewerParent.classList.add("animate-fade-up");
+        }
+
+        if (title) {
+          title.classList.remove("animate-fade-up");
+          title.style.animationDelay = "";
+          title.style.animationDuration = "";
+          void title.offsetWidth;
+          title.style.animationDelay = `${currentDelayText}ms`;
+          title.style.animationDuration = "1.5s";
+          title.classList.add("animate-fade-up");
+        }
+
+        currentDelay += 2000;
+        currentDelayText += 2000;
+      }
+
+      // retrigger view more fade
+      if (viewMore) {
+        viewMore.classList.remove("animate-fade-up");
+        viewMore.style.animationDelay = "";
+        viewMore.style.animationDuration = "";
+        void viewMore.offsetWidth;
+        viewMore.style.animationDelay = "7000ms";
+        viewMore.style.animationDuration = "1.5s";
+        viewMore.classList.add("animate-fade-up");
+      }
     }
   }
 
@@ -580,14 +617,15 @@ function renderMechanicaProjects(){
     count = 1;
     currentDelay = 1000;
     currentDelayText = 2000;
-    githubData.mechanica.slice(0, 3).forEach((repo, index) => {
+    githubData.mechanica.slice(0, 3).forEach((repoObj, index) => {
+      const repo = Object.keys(repoObj)[0];
       const projectDiv = document.createElement("div");
       projectDiv.className = "mechanicaProject";
       projectDiv.innerHTML = `
         <div class="modelViewerParent-${count} h-48 bg-neutral-900 border border-white/10 rounded-lg animate-fade-up" style="animation-delay:${currentDelay}ms">
           <model-viewer class="h-full w-full" src="https://raw.githubusercontent.com/Shaileshsaravanan/${repo}/main/.website/preview.glb" shadow-intensity="1" camera-controls touch-action="pan-x"></model-viewer>
         </div>
-        <div class="modelViewerTitle-${count} mt-3 font-medium font-geist animate-fade-up" style="animation-delay:${currentDelayText}ms">${repo}</div>
+        <div onclick="event.stopPropagation(); window.location.href='/mechanica/${repo}'" class="modelViewerTitle-${count} mt-3 cursor-pointer animate-fade-up text-white hover:text-black hover:bg-white px-1 rounded-md hover:underline text-sm font-geist inline-flex transition-colors duration-700 ease-in-out" style="animation-delay:${currentDelayText}ms">${repo} <svg xmlns="http://www.w3.org/2000/svg" class="h-[1em] ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right-icon lucide-arrow-up-right"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg> </div>
       `;
       container.appendChild(projectDiv);
       currentDelay += 2000;
@@ -604,7 +642,8 @@ function renderScriptoriumProjects(){
 
   if (!githubData || !githubData.scriptorium || !Array.isArray(githubData.scriptorium)) return;
 
-  githubData.scriptorium.slice(0, 3).forEach((repo) => {
+  githubData.scriptorium.slice(0, 3).forEach((repoObj) => {
+    const repo = Object.keys(repoObj)[0];
     const projectDiv = document.createElement("div");
     projectDiv.className = "scriptoriumProject";
     projectDiv.innerHTML = `
@@ -614,7 +653,7 @@ function renderScriptoriumProjects(){
              onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/Shaileshsaravanan/${repo}/main/.website/preview.gif';"
              alt="${repo}">
       </div>
-      <div class="modelViewerTitle-${count} mt-3 font-medium font-geist animate-fade-up" style="animation-delay:${currentDelayText}ms">${repo}</div>
+      <div onclick="event.stopPropagation(); window.location.href='/scriptorium/${repo}'" class="modelViewerTitle-${count} mt-3 cursor-pointer animate-fade-up text-white hover:text-black hover:bg-white px-1 rounded-md hover:underline text-sm font-geist inline-flex transition-colors duration-700 ease-in-out" style="animation-delay:${currentDelayText}ms">${repo} <svg xmlns="http://www.w3.org/2000/svg" class="h-[1em] ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right-icon lucide-arrow-up-right"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg> </div>
     `;
     container.appendChild(projectDiv);
     currentDelay += 2000;

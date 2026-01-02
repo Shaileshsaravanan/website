@@ -36,10 +36,20 @@ while True:
             if raw.status_code == 200:
                 info = raw.json()
                 repo_type = info.get("type")
+
+                readme_url = f"https://raw.githubusercontent.com/{GITHUB_USERNAME}/{repo_name}/main/readme.md"
+
+                entry = {
+                    repo_name: {
+                        "readme": readme_url,
+                        "data": info
+                    }
+                }
+
                 if repo_type == "mechanica":
-                    githubData['mechanica'].append(repo_name)       
+                    githubData["mechanica"].append(entry)
                 elif repo_type == "scriptorium":
-                    githubData['scriptorium'].append(repo_name)
+                    githubData["scriptorium"].append(entry)
 
     page += 1
 
@@ -47,6 +57,24 @@ app = Flask(__name__)
 @app.route("/")
 def home():
     return render_template("index.html", githubData=githubData)
+
+@app.route("/mechanica")
+def mechanica():
+    return render_template("mechanica.html", githubData=githubData)
+
+@app.route("/mechanica/<project>")
+def mechanica_project(project):
+    project_data = None
+    for repo_obj in githubData['mechanica']:
+        repo_name = list(repo_obj.keys())[0]
+        if repo_name == project:
+            project_data = repo_obj[repo_name]
+            break
+
+    if project_data is None:
+        return "Project not found", 404
+
+    return render_template("mechanicaProject.html", project=project, project_data=project_data)
 
 if __name__ == "__main__":
     app.run(debug=True, port=8000)

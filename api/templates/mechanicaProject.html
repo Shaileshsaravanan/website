@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% include "header.html" %}
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <style>
+    #readme h1 { font-size: 2.25rem; line-height: 2.5rem; font-weight: 800; margin-top: 1.5rem; margin-bottom: 1rem; }
+    #readme h2 { font-size: 1.875rem; line-height: 2.25rem; font-weight: 700; margin-top: 1.25rem; margin-bottom: .9rem; }
+    #readme h3 { font-size: 1.5rem; line-height: 2rem; font-weight: 700; margin-top: 1rem; margin-bottom: .7rem; }
+    #readme h4 { font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; margin-top: .9rem; margin-bottom: .6rem; }
+    #readme h5 { font-size: 1.125rem; line-height: 1.5rem; font-weight: 600; margin-top: .8rem; margin-bottom: .5rem; }
+    #readme h6 { font-size: 1rem; line-height: 1.5rem; font-weight: 600; margin-top: .7rem; margin-bottom: .4rem; opacity:.9; }
+
+    #readme p { margin: .85rem 0; line-height: 1.75; }
+
+    #readme ul,
+    #readme ol { margin: .9rem 0 .9rem 1.5rem; }
+
+    #readme li { margin: .35rem 0; }
+
+    #readme pre { margin: 1.2rem 0; padding: 1.1rem; border-radius: .6rem; }
+
+    #readme table { margin: 1.2rem 0; }
+
+    #readme > *:first-child { margin-top: 0; }
+  </style>
+    <body class="text-white bg-black">    
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <span onclick="event.stopPropagation(); window.location.href='/mechanica'" class="cursor-pointer animate-fade-down text-neutral-700 bg-white hover:text-white hover:bg-neutral-700 px-1 rounded-md text-sm font-geist inline-flex items-center transition-colors duration-700 ease-in-out"><svg xmlns="http://www.w3.org/2000/svg" class="h-[1em] mr-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right-icon lucide-arrow-right"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>back to mechanica</span>
+            <h1 class="pt-10 w-full text-5xl italic text-center animate-fade-down animate-delay-[800ms]">{{ project }}</h1>
+            <p class="pb-10 text-center text-neutral-400 text-lg animate-fade-down animate-delay-[1200ms]">{{ project_data.data.desc }}</p>
+        </section>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 prose prose-invert font-geist mb-20">
+            <div class="float-left mr-6 mb-4 w-96 h-96">
+                <div class="h-full animate-fade-up">
+                    <model-viewer 
+                        class="h-full w-full"
+                        src="https://raw.githubusercontent.com/Shaileshsaravanan/{{ project }}/main/.website/preview.glb"
+                        shadow-intensity="1"
+                        camera-controls
+                        touch-action="pan-x">
+                    </model-viewer>
+                </div>
+            </div>
+            <div id="readme"></div>
+        </div>
+  </body>
+</html>
+<script>
+
+    const projectData = {{ project_data | tojson }};
+
+    fetch(projectData.readme)
+    .then(res => res.text())
+    .then(md => {
+        const html = marked.parse(md);
+        const safe = DOMPurify.sanitize(html);
+        document.getElementById("readme").innerHTML = safe;
+    })
+    .catch(console.error);
+
+</script>

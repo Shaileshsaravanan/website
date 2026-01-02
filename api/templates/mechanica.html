@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% include "header.html" %}
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+    <body class="text-white bg-black">    
+        <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <span onclick="event.stopPropagation(); window.location.href='/'" class="cursor-pointer animate-fade-down text-neutral-700 bg-white hover:text-white hover:bg-neutral-700 px-1 rounded-md text-sm font-geist inline-flex items-center transition-colors duration-700 ease-in-out"><svg xmlns="http://www.w3.org/2000/svg" class="h-[1em] mr-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right-icon lucide-arrow-right"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>back to main</span>
+            <h1 class="py-10 w-full text-5xl italic text-center mb-3 animate-fade-down animate-delay-[800ms]">mechanica</h1>
+
+            <div id="mechanicaProjects" class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10"></div>
+        </section>
+  </body>
+</html>
+<script>
+    const githubData = {{ githubData | tojson }};
+
+    function renderMechanicaProjects(){
+      const container = document.getElementById("mechanicaProjects");
+      if (!container || !githubData || !githubData.mechanica || !Array.isArray(githubData.mechanica)) return;
+
+      let count = 1;
+      let currentDelay = 1400;
+      let currentDelayText = 1800;
+
+      githubData.mechanica.forEach((repoObj) => {
+        const repo = Object.keys(repoObj)[0];
+        console.log(repoObj[repo].data);
+        const projectDiv = document.createElement("div");
+        projectDiv.className = "mechanicaProject";
+        projectDiv.innerHTML = `
+          <div class="modelViewerParent-${count} h-48 bg-neutral-900 border border-white/10 rounded-lg animate-fade-up" style="animation-delay:${currentDelay}ms">
+            <model-viewer class="h-full w-full"
+              src="https://raw.githubusercontent.com/Shaileshsaravanan/${repo}/main/.website/preview.glb"
+              shadow-intensity="1"
+              camera-controls
+              touch-action="pan-x">
+            </model-viewer>
+          </div>
+
+          <div onclick="event.stopPropagation(); window.location.href='/mechanica/${repo}'"
+            class="modelViewerTitle-${count} mt-3 cursor-pointer animate-fade-up text-white hover:text-black hover:bg-white px-1 rounded-md hover:underline text-sm font-geist inline-flex transition-colors duration-700 ease-in-out"
+            style="animation-delay:${currentDelayText}ms">
+            ${repo}
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-[1em] ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 7h10v10"/>
+              <path d="M7 17 17 7"/>
+            </svg>
+          </div>
+
+            <div class="mb-6">
+                <p class="mt-1 px-1 text-sm text-neutral-400 animate-fade-up" style="animation-delay:${currentDelayText + 200}ms">
+                    ${repoObj[repo].data.desc}
+                </p>
+            </div>
+        `;
+        container.appendChild(projectDiv);
+        currentDelay += 800;
+        currentDelayText += 800;
+        count += 1;
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", renderMechanicaProjects);
+</script>
