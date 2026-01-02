@@ -873,6 +873,10 @@ video {
   height: 100%;
 }
 
+.h-64 {
+  height: 16rem;
+}
+
 .max-h-0 {
   max-height: 0px;
 }
@@ -914,6 +918,15 @@ video {
   width: max-content;
 }
 
+.w-fit {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.w-2 {
+  width: 0.5rem;
+}
+
 .max-w-4xl {
   max-width: 56rem;
 }
@@ -924,6 +937,10 @@ video {
 
 .flex-shrink {
   flex-shrink: 1;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
 }
 
 .-translate-x-1\/2 {
@@ -1011,6 +1028,16 @@ video {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.cursor-grab {
+  cursor: grab;
+}
+
+.select-none {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
 }
 
 .resize {
@@ -1412,6 +1439,11 @@ video {
   padding-bottom: 0.75rem;
 }
 
+.py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
 .pb-10 {
   padding-bottom: 2.5rem;
 }
@@ -1665,6 +1697,10 @@ video {
   transition-duration: 700ms;
 }
 
+.duration-500 {
+  transition-duration: 500ms;
+}
+
 .ease-in-out {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -1713,6 +1749,10 @@ video {
   animation-delay: 800ms;
 }
 
+.animate-delay-\[400ms\] {
+  animation-delay: 400ms;
+}
+
 .animate-duration-\[1200ms\] {
   animation-duration: 1200ms;
 }
@@ -1720,6 +1760,11 @@ video {
 .hover\:border-gray-300:hover {
   --tw-border-opacity: 1;
   border-color: rgb(209 213 219 / var(--tw-border-opacity));
+}
+
+.hover\:border-white:hover {
+  --tw-border-opacity: 1;
+  border-color: rgb(255 255 255 / var(--tw-border-opacity));
 }
 
 .hover\:bg-blue-800:hover {
@@ -1823,6 +1868,10 @@ video {
   --tw-ring-color: rgb(229 231 235 / var(--tw-ring-opacity));
 }
 
+.active\:cursor-grabbing:active {
+  cursor: grabbing;
+}
+
 .group:hover .group-hover\:pointer-events-auto {
   pointer-events: auto;
 }
@@ -1868,12 +1917,28 @@ video {
     float: left;
   }
 
+  .lg\:flex {
+    display: flex;
+  }
+
   .lg\:h-96 {
     height: 24rem;
   }
 
   .lg\:w-96 {
     width: 24rem;
+  }
+
+  .lg\:flex-row {
+    flex-direction: row;
+  }
+
+  .lg\:items-start {
+    align-items: flex-start;
+  }
+
+  .lg\:gap-6 {
+    gap: 1.5rem;
   }
 
   .lg\:px-8 {

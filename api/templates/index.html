@@ -617,7 +617,7 @@ function renderMechanicaProjects(){
     count = 1;
     currentDelay = 1000;
     currentDelayText = 2000;
-    githubData.mechanica.slice(0, 3).forEach((repoObj, index) => {
+    [...githubData.mechanica].sort(() => Math.random() - 0.5).slice(0, 3).forEach((repoObj, index) => {
       const repo = Object.keys(repoObj)[0];
       const projectDiv = document.createElement("div");
       projectDiv.className = "mechanicaProject";
@@ -642,7 +642,7 @@ function renderScriptoriumProjects(){
 
   if (!githubData || !githubData.scriptorium || !Array.isArray(githubData.scriptorium)) return;
 
-  githubData.scriptorium.slice(0, 3).forEach((repoObj) => {
+    [...githubData.scriptorium].sort(() => Math.random() - 0.5).slice(0, 3).forEach((repoObj) => {
     const repo = Object.keys(repoObj)[0];
     const projectDiv = document.createElement("div");
     projectDiv.className = "scriptoriumProject";
