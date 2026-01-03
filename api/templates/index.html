@@ -99,7 +99,7 @@
                     scriptorium
                   </span>
                 </h2>
-                <span class="viewMore hidden cursor-pointer animate-fade-up animate-delay-[7500ms] text-white hover:text-black hover:bg-white px-1 rounded-md hover:underline text-sm font-geist inline-flex transition-colors duration-700 ease-in-out">view more 
+                <span onclick="event.stopPropagation(); window.location.href='/scriptorium'" class="viewMore hidden cursor-pointer animate-fade-up animate-delay-[7500ms] text-white hover:text-black hover:bg-white px-1 rounded-md hover:underline text-sm font-geist inline-flex transition-colors duration-700 ease-in-out">view more 
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-[1em] ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
                 </span>
               </div>
@@ -614,46 +614,83 @@ function toggleAccord(btn){
 
 function renderMechanicaProjects(){
     const container = document.getElementById("mechanicaProjects");
-    count = 1;
-    currentDelay = 1000;
-    currentDelayText = 2000;
-    [...githubData.mechanica].sort(() => Math.random() - 0.5).slice(0, 3).forEach((repoObj, index) => {
-      const repo = Object.keys(repoObj)[0];
+    if (!container || !githubData || !githubData.mechanica) return;
+
+    container.innerHTML = "";
+
+    const entries = Object.entries(githubData.mechanica)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3);
+
+    let count = 1;
+    let currentDelay = 1000;
+    let currentDelayText = 2000;
+
+    entries.forEach(([repo, repoObj]) => {
       const projectDiv = document.createElement("div");
       projectDiv.className = "mechanicaProject";
       projectDiv.innerHTML = `
         <div class="modelViewerParent-${count} h-48 bg-neutral-900 border border-white/10 rounded-lg animate-fade-up" style="animation-delay:${currentDelay}ms">
-          <model-viewer class="h-full w-full" src="https://raw.githubusercontent.com/Shaileshsaravanan/${repo}/main/.website/preview.glb" shadow-intensity="1" camera-controls touch-action="pan-x"></model-viewer>
+          <model-viewer class="h-full w-full"
+            src="https://raw.githubusercontent.com/Shaileshsaravanan/${repo}/main/.website/preview.glb"
+            shadow-intensity="1"
+            camera-controls
+            touch-action="pan-x">
+          </model-viewer>
         </div>
-        <div onclick="event.stopPropagation(); window.location.href='/mechanica/${repo}'" class="modelViewerTitle-${count} mt-3 cursor-pointer animate-fade-up text-white hover:text-black hover:bg-white px-1 rounded-md hover:underline text-sm font-geist inline-flex transition-colors duration-700 ease-in-out" style="animation-delay:${currentDelayText}ms">${repo} <svg xmlns="http://www.w3.org/2000/svg" class="h-[1em] ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right-icon lucide-arrow-up-right"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg> </div>
+
+        <div onclick="event.stopPropagation(); window.location.href='/mechanica/${repo}'"
+          class="modelViewerTitle-${count} mt-3 cursor-pointer animate-fade-up text-white hover:text-black hover:bg-white px-1 rounded-md hover:underline text-sm font-geist inline-flex transition-colors duration-700 ease-in-out"
+          style="animation-delay:${currentDelayText}ms">
+          ${repo}
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-[1em] ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 7h10v10"/>
+            <path d="M7 17 17 7"/>
+          </svg>
+        </div>
       `;
       container.appendChild(projectDiv);
       currentDelay += 2000;
       currentDelayText += 2000;
       count += 1;
     });
-  }
+}
 
 function renderScriptoriumProjects(){
   const container = document.getElementById("scriptoriumProjects");
+  if (!container || !githubData || !githubData.scriptorium) return;
+
+  container.innerHTML = "";
+
+  const entries = Object.entries(githubData.scriptorium)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3);
+
   let count = 1;
   let currentDelay = 1000;
   let currentDelayText = 2000;
 
-  if (!githubData || !githubData.scriptorium || !Array.isArray(githubData.scriptorium)) return;
-
-    [...githubData.scriptorium].sort(() => Math.random() - 0.5).slice(0, 3).forEach((repoObj) => {
-    const repo = Object.keys(repoObj)[0];
+  entries.forEach(([repo, repoObj]) => {
     const projectDiv = document.createElement("div");
     projectDiv.className = "scriptoriumProject";
     projectDiv.innerHTML = `
-      <div class="modelViewerParent-${count} h-48 p-2 bg-neutral-900 border border-white/10 rounded-lg animate-fade-up" style="animation-delay:${currentDelay}ms">
+      <div class="modelViewerParent-${count} h-48 p-2 bg-neutral-900 border border-white/10 rounded-lg animate-fade-up"
+           style="animation-delay:${currentDelay}ms">
         <img class="h-full w-full"
              src="https://raw.githubusercontent.com/Shaileshsaravanan/${repo}/main/.website/preview.png"
              onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/Shaileshsaravanan/${repo}/main/.website/preview.gif';"
              alt="${repo}">
       </div>
-      <div onclick="event.stopPropagation(); window.location.href='/scriptorium/${repo}'" class="modelViewerTitle-${count} mt-3 cursor-pointer animate-fade-up text-white hover:text-black hover:bg-white px-1 rounded-md hover:underline text-sm font-geist inline-flex transition-colors duration-700 ease-in-out" style="animation-delay:${currentDelayText}ms">${repo} <svg xmlns="http://www.w3.org/2000/svg" class="h-[1em] ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right-icon lucide-arrow-up-right"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg> </div>
+
+      <div onclick="event.stopPropagation(); window.location.href='/scriptorium/${repo}'"
+        class="modelViewerTitle-${count} mt-3 cursor-pointer animate-fade-up text-white hover:text-black hover:bg-white px-1 rounded-md hover:underline text-sm font-geist inline-flex transition-colors duration-700 ease-in-out"
+        style="animation-delay:${currentDelayText}ms">
+        ${repo}
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-[1em] ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 7h10v10"/>
+          <path d="M7 17 17 7"/>
+        </svg>
+      </div>
     `;
     container.appendChild(projectDiv);
     currentDelay += 2000;

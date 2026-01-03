@@ -6,7 +6,7 @@ import requests
 
 GITHUB_USERNAME = "shaileshsaravanan"
 GITHUB_TOKEN = env.str("GITHUB_TOKEN")
-githubData = {'mechanica': [], 'scriptorium': []}
+githubData = {'mechanica': {}, 'scriptorium': {}}
 page = 1
 
 while True:
@@ -40,16 +40,14 @@ while True:
                 content_url = f"https://raw.githubusercontent.com/{GITHUB_USERNAME}/{repo_name}/main/.website/content.md"
 
                 entry = {
-                    repo_name: {
-                        "content": content_url,
-                        "data": info
-                    }
+                    "content": content_url,
+                    "data": info
                 }
 
                 if repo_type == "mechanica":
-                    githubData["mechanica"].append(entry)
+                    githubData["mechanica"][repo_name] = entry
                 elif repo_type == "scriptorium":
-                    githubData["scriptorium"].append(entry)
+                    githubData["scriptorium"][repo_name] = entry
 
     page += 1
 
@@ -60,21 +58,28 @@ def home():
 
 @app.route("/mechanica")
 def mechanica():
-    return render_template("mechanica.html", githubData=githubData)
+    return render_template("mechanica/index.html", githubData=githubData)
 
 @app.route("/mechanica/<project>")
 def mechanica_project(project):
-    project_data = None
-    for repo_obj in githubData['mechanica']:
-        repo_name = list(repo_obj.keys())[0]
-        if repo_name == project:
-            project_data = repo_obj[repo_name]
-            break
-
-    if project_data is None:
+    try:
+        project_data = githubData["mechanica"].get(project)
+        return render_template("mechanica/project.html", project=project, project_data=project_data)
+    except:
         return "Project not found", 404
 
-    return render_template("mechanicaProject.html", project=project, project_data=project_data)
+@app.route("/scriptorium")
+def scriptorium():
+    return render_template("scriptorium/index.html", githubData=githubData)
+
+@app.route("/scriptorium/<project>")
+def scriptorium_project(project):
+
+    try:
+        project_data = githubData["scriptorium"].get(project)
+        return render_template("scriptorium/project.html", project=project, project_data=project_data)
+    except:
+        return "Project not found", 404
 
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
